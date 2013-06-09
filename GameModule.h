@@ -21,7 +21,6 @@ private:
 	HINSTANCE instance;
 	windowclass thewindow;
 	HWND window;
-	GraphicsModule graphics;
-    
-    
+	GraphicsModule graphics;  
 };
+

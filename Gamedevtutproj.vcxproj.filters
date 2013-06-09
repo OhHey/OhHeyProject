@@ -12,7 +12,7 @@
     <Filter Include="GameTimer">
       <UniqueIdentifier>{11224011-6279-4442-982c-40641a13ba05}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Input">
+    <Filter Include="Other">
       <UniqueIdentifier>{67f2f2c0-2be0-41f4-8732-581d45453f82}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -39,6 +39,9 @@
     <ClCompile Include="objectmesh.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="physicslib.cpp">
+      <Filter>Other</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GraphicsModule.h">
@@ -63,7 +66,10 @@
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="structsandincludes.h">
-      <Filter>Input</Filter>
+      <Filter>Other</Filter>
+    </ClInclude>
+    <ClInclude Include="physicslib.h">
+      <Filter>Other</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

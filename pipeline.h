@@ -6,6 +6,9 @@
 
 class pipeline{
 public:
+
+	ID3D11BlendState *pBlendState;
+
 	HWND hWnd;
 	IDXGISwapChain *SwapChain;             // the pointer to the swap chain interface
 	ID3D11Device *Device;                     // the pointer to our Direct3D device interface
@@ -26,17 +29,7 @@ public:
 
 	//Textures
 	ID3D11ShaderResourceView *pShaderRVBricks; //shader resource view
-	ID3D11ShaderResourceView *pShaderRV0; //shader resource view
-	ID3D11ShaderResourceView *pShaderRV1; //shader resource view
-	ID3D11ShaderResourceView *pShaderRV2; //shader resource view
-	ID3D11ShaderResourceView *pShaderRV3; //shader resource view
-	ID3D11ShaderResourceView *pShaderRV4; //shader resource view
-	ID3D11ShaderResourceView *pShaderRV5; //shader resource view
-	ID3D11ShaderResourceView *pShaderRV6; //shader resource view
-	ID3D11ShaderResourceView *pShaderRV7; //shader resource view
-	ID3D11ShaderResourceView *pShaderRV8; //shader resource view
-	ID3D11ShaderResourceView *pShaderRV9; //shader resource view
-	ID3D11ShaderResourceView *shiptexture; //shader resource view
+	ID3D11ShaderResourceView *projtexture; //shader resource view
 
 	pipeline(HWND hWndin);
 

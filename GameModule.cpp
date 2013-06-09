@@ -3,6 +3,7 @@
 
 GameModule::GameModule(HINSTANCE &instance) :thewindow(instance),window(thewindow.window),graphics(window)
 {
+	SetWindowLongPtr(window,GWLP_USERDATA,(LONG)&theinput);
 	time1 = thetimer.gettime();
 }
 
@@ -30,7 +31,7 @@ bool GameModule::MainLoop(MSG *msg) {
 		time2 = thetimer.gettime();
 		float timeelapsed = time2 - time1;
 		time1 = time2;
-		graphics.UpdateFrame(timeelapsed);
+		graphics.UpdateFrame(timeelapsed,time2);
 		graphics.RenderFrame(timeelapsed);
 
         if (msg->message == WM_QUIT) {

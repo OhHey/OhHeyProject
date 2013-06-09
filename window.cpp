@@ -5,7 +5,8 @@ char keyin;
 bool button_pressed;
 
 LRESULT CALLBACK WndProc(HWND wnd, UINT message, WPARAM wParam, LPARAM lParam) {
-	button_pressed = false;
+	InputStruct *input = (InputStruct*)GetWindowLongPtr(wnd,GWLP_USERDATA);
+  
     switch (message) {
         case WM_DESTROY: {
             PostQuitMessage(0);
@@ -16,6 +17,7 @@ LRESULT CALLBACK WndProc(HWND wnd, UINT message, WPARAM wParam, LPARAM lParam) {
 		case WM_CHAR: {
 			keyin = (char) wParam;
 			button_pressed = true;
+			
 		}
 					  break;
 
@@ -28,6 +30,8 @@ LRESULT CALLBACK WndProc(HWND wnd, UINT message, WPARAM wParam, LPARAM lParam) {
 
 windowclass::windowclass(HINSTANCE &instance)
 {
+	RECT temp = {0, 0, 1280, 720};
+	windowSize = temp;
 	ZeroMemory(&this->wndClass, sizeof(WNDCLASSEX));
     
     // Create our window description.

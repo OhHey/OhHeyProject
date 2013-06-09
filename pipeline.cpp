@@ -1,6 +1,6 @@
 //pipeline.cpp__________________________________
 #include "pipeline.h"
-
+#include <sstream>
 
 pipeline::pipeline(HWND hWndin):hWnd(hWndin)
 {
@@ -29,7 +29,8 @@ void pipeline::InitDevSwap(){
 	error = D3D11CreateDeviceAndSwapChain(NULL,
 		D3D_DRIVER_TYPE_HARDWARE,
 		NULL,
-		D3D11_CREATE_DEVICE_DEBUG,
+		NULL,
+		//D3D11_CREATE_DEVICE_DEBUG,
 		NULL,
 		NULL,
 		D3D11_SDK_VERSION,
@@ -58,8 +59,8 @@ void pipeline::InitDevSwap(){
 
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
-	viewport.Width = 800;
-	viewport.Height = 600;
+	viewport.Width = 1280;
+	viewport.Height = 720;
 
 	devcon->RSSetViewports(1, &viewport);
 }
@@ -69,47 +70,42 @@ void pipeline::InitShaders(){
 
 	// load and compile the two shaders
 	
-	D3DCompileFromFile(L"shaders.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, &VS, 0);
-	D3DCompileFromFile(L"shaders.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, &PS, 0);
-	D3DCompileFromFile(L"shaders.hlsl", 0, 0, "VShaderTex", "vs_5_0", 0, 0, &VSTex, &bloberror);
-	D3DCompileFromFile(L"shaders.hlsl", 0, 0, "PShaderTex", "ps_5_0", 0, 0, &PSTex, 0);
+	error = D3DCompileFromFile(L"shaders.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, &VS, 0);
+	if (FAILED(error)) { MessageBox(NULL,L"OH NOES VShader Compile!",L"QUIT",NULL); }
+	error = D3DCompileFromFile(L"shaders.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, &PS, 0);
+	if (FAILED(error)) { MessageBox(NULL,L"OH NOES PShader Compile!",L"QUIT",NULL); }
+	error = D3DCompileFromFile(L"shaders.hlsl", 0, 0, "VShaderTex", "vs_4_0", 0, 0, &VSTex, &bloberror);
+	if (FAILED(error)) { MessageBox(NULL,L"OH NOES VShaderTex Compile!",L"QUIT",NULL); }
+	error = D3DCompileFromFile(L"shaders.hlsl", 0, 0, "PShaderTex", "ps_4_0", 0, 0, &PSTex, 0);
+	if (FAILED(error)) { MessageBox(NULL,L"OH NOES PShaderTex Compile!!",L"QUIT",NULL); }
 	//char* errortext = (char*)bloberror->GetBufferPointer();
 
 	// encapsulate both shaders into shader objects
+	
+	std::ostringstream os;
 	error = Device->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), NULL, &pVS);
-	if (FAILED(error)) { MessageBox(NULL,L"OH NOES VS CREATE!",L"QUIT",NULL); }
+	//MessageBox(NULL,(LPCWSTR)os.str().c_str(),(LPCWSTR)os.str().c_str(),NULL);
+	os << (LONG)error;
+	if (FAILED(error)) { MessageBoxA(NULL,os.str().c_str(),"QUIT",NULL); }
+	
 	error = Device->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &pPS);
-	if (FAILED(error)) { MessageBox(NULL,L"OH NOES PS CREATE!",L"QUIT",NULL); }
+	//if (FAILED(error)) { MessageBox(NULL,L"OH NOES PS CREATE!",L"QUIT",NULL); }
+	os << (LONG)error;
+	if (FAILED(error)) { MessageBoxA(NULL,os.str().c_str(),"QUIT",NULL); }
 	error = Device->CreateVertexShader(VSTex->GetBufferPointer(), VSTex->GetBufferSize(), NULL, &pVSTex);
-	if (FAILED(error)) { MessageBox(NULL,L"OH NOES VSTEX CREATE!",L"QUIT",NULL); }
+	//if (FAILED(error)) { MessageBox(NULL,L"OH NOES VSTEX CREATE!",L"QUIT",NULL); }
+	os << (LONG)error;
+	if (FAILED(error)) { MessageBoxA(NULL,os.str().c_str(),"QUIT",NULL); }
 	error = Device->CreatePixelShader(PSTex->GetBufferPointer(), PSTex->GetBufferSize(), NULL, &pPSTex);
-	if (FAILED(error)) { MessageBox(NULL,L"OH NOES PSTEXT CREATE!",L"QUIT",NULL); }
+	//if (FAILED(error)) { MessageBox(NULL,L"OH NOES PSTEXT CREATE!",L"QUIT",NULL); }
+	os << (LONG)error;
+	if (FAILED(error)) { MessageBoxA(NULL,os.str().c_str(),"QUIT",NULL); }
 
 	//load the picture to a shader resource view
-	error = CreateWICTextureFromFile(Device, devcon, L"bricks.JPEG",nullptr,&pShaderRVBricks);
+	error = CreateWICTextureFromFile(Device, devcon, L"brick2.JPEG",nullptr,&pShaderRVBricks);
 	if (FAILED(error)) { MessageBox(NULL,L"OH NOES WICLOADER BRICKS!",L"QUIT",NULL); }
-	error = CreateWICTextureFromFile(Device, devcon, L"ship.png",nullptr,&shiptexture);
+	error = CreateWICTextureFromFile(Device, devcon, L"circle.png",nullptr,&projtexture);
 	if (FAILED(error)) { MessageBox(NULL,L"OH NOES WICLOADER SHIP",L"QUIT",NULL); }
-	error = CreateWICTextureFromFile(Device, devcon, L"0.PNG",nullptr,&pShaderRV0);
-	if (FAILED(error)) { MessageBox(NULL,L"OH NOES WICLOADER 0!",L"QUIT",NULL); }
-	error = CreateWICTextureFromFile(Device, devcon, L"1.PNG",nullptr,&pShaderRV1);
-	if (FAILED(error)) { MessageBox(NULL,L"OH NOES WICLOADER 1!",L"QUIT",NULL); }
-	error = CreateWICTextureFromFile(Device, devcon, L"2.PNG",nullptr,&pShaderRV2);
-	if (FAILED(error)) { MessageBox(NULL,L"OH NOES WICLOADER 2!",L"QUIT",NULL); }
-	error = CreateWICTextureFromFile(Device, devcon, L"3.PNG",nullptr,&pShaderRV3);
-	if (FAILED(error)) { MessageBox(NULL,L"OH NOES WICLOADER 3!",L"QUIT",NULL); }
-	error = CreateWICTextureFromFile(Device, devcon, L"4.PNG",nullptr,&pShaderRV4);
-	if (FAILED(error)) { MessageBox(NULL,L"OH NOES WICLOADER 4!",L"QUIT",NULL); }
-	error = CreateWICTextureFromFile(Device, devcon, L"5.PNG",nullptr,&pShaderRV5);
-	if (FAILED(error)) { MessageBox(NULL,L"OH NOES WICLOADER 5!",L"QUIT",NULL); }
-	error = CreateWICTextureFromFile(Device, devcon, L"6.PNG",nullptr,&pShaderRV6);
-	if (FAILED(error)) { MessageBox(NULL,L"OH NOES WICLOADER 6!",L"QUIT",NULL); }
-	error = CreateWICTextureFromFile(Device, devcon, L"7.PNG",nullptr,&pShaderRV7);
-	if (FAILED(error)) { MessageBox(NULL,L"OH NOES WICLOADER 7!",L"QUIT",NULL); }
-	error = CreateWICTextureFromFile(Device, devcon, L"8.PNG",nullptr,&pShaderRV8);
-	if (FAILED(error)) { MessageBox(NULL,L"OH NOES WICLOADER 8!",L"QUIT",NULL); }
-	error = CreateWICTextureFromFile(Device, devcon, L"9.PNG",nullptr,&pShaderRV9);
-	if (FAILED(error)) { MessageBox(NULL,L"OH NOES WICLOADER 9!",L"QUIT",NULL); }
 
 	//sampler description
 	D3D11_SAMPLER_DESC samplerDesc;
@@ -141,22 +137,49 @@ void pipeline::InitShaders(){
 	if (FAILED(error)) { MessageBox(NULL,L"OH NOES SAMPLER!",L"QUIT",NULL); }
 
 	//set shader resource to that made from picture and set sampler
-	
-	devcon->PSSetSamplers(0,1,&pSampler);
 
 	//set inputlayouy
 
-	D3D11_INPUT_ELEMENT_DESC InputDesc[2] =
+	D3D11_INPUT_ELEMENT_DESC InputDescTex[2] =
 	{
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
 
-	error = Device->CreateInputLayout(InputDesc, 2, VSTex->GetBufferPointer(), VSTex->GetBufferSize(), &InputLayout);
+	D3D11_INPUT_ELEMENT_DESC InputDescColor[2] =
+	{
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0}
+	};
+
+	error = Device->CreateInputLayout(InputDescTex, 2, VSTex->GetBufferPointer(), VSTex->GetBufferSize(), &InputLayout);
+	//error = Device->CreateInputLayout(InputDescColor, 2, VS->GetBufferPointer(), VS->GetBufferSize(), &InputLayout);
 	if (FAILED(error)) { MessageBox(NULL,L"OH NOES INPUTLAYOUT iedtex!",L"QUIT",NULL); }
 
-	devcon->IASetInputLayout(InputLayout);
+	D3D11_BLEND_DESC BlendStateDesc;
+	ZeroMemory(&BlendStateDesc, sizeof(D3D10_BLEND_DESC));
+ 
+	BlendStateDesc.RenderTarget[0].BlendEnable = TRUE;
+	BlendStateDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	BlendStateDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	BlendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	BlendStateDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ZERO;
+	BlendStateDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	BlendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	BlendStateDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
+	float blendFactor[] = {0.0f, 0.0f, 0.0f, 0.0f};
+
+	Device->CreateBlendState(&BlendStateDesc, &pBlendState);
+
+	devcon->OMSetBlendState(pBlendState,blendFactor,0xffffffff);
+
+	devcon->VSSetShader(pVSTex, 0, 0);
+	devcon->PSSetShader(pPSTex, 0, 0);
+	//devcon->VSSetShader(pVS, 0, 0);
+	//devcon->PSSetShader(pPS, 0, 0);
+	devcon->PSSetSamplers(0,1,&pSampler);
+	devcon->IASetInputLayout(InputLayout);
 }
 
 void pipeline::InitConstBuff()
@@ -188,6 +211,6 @@ void pipeline::CreateVB(objectmesh &objectmeshpara)
 
 	D3D11_MAPPED_SUBRESOURCE mapsqrtex;
 	devcon->Map(objectmeshpara.VertexBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &mapsqrtex);		// map the buffer
-	memcpy(mapsqrtex.pData, objectmeshpara.vertices, sizeof(objectmeshpara.vertices));							// copy the data
+	memcpy(mapsqrtex.pData, objectmeshpara.vertices.data(), objectmeshpara.vertices.size()*sizeof(VERTEXTEX));							// copy the data
 	devcon->Unmap(objectmeshpara.VertexBuffer, NULL);	
 }

@@ -5,14 +5,17 @@ GraphicsModule:: GraphicsModule(HWND window):thepipeline(window)
 {
 	XMVECTOR updirt= {0,1,0};
 	XMVECTOR focust= {0,0,0};
-	XMVECTOR eyepost= {0,0,-450};
+	XMVECTOR eyepost= {0,0,450};
 
 	updir = updirt;
 	focus = focust;
 	eyepos = eyepost;
 
-	XMMATRIX viewt = XMMatrixLookAtLH(eyepos,focus,updir);
-	XMMATRIX projt = XMMatrixPerspectiveFovLH((3.14*0.25),(800.0f/600.0f),1,1000);
+	XMMATRIX viewt = XMMatrixLookAtRH(eyepos,focus,updir);
+	XMMATRIX projt = XMMatrixPerspectiveFovRH((PI*0.25),(1280.0f/720.0f),1,1000);
+
+	cooldown = 0.3;
+	firingrange = 4;
 
 	view = viewt;
 	proj = projt;
@@ -35,7 +38,7 @@ bool GraphicsModule::RenderFrame(float timeelapsed)
 	for(int i=0;i<gameobjects.size();i++){
 		thepipeline.devcon->PSSetShaderResources(0,1,&gameobjects[i].texture);
 
-		gameobjects[i].y = gameobjects[i].y + (gameobjects[i].vy * timeelapsed);
+		
 
 		XMMATRIX trans( 
 		1,0,0,0,
@@ -50,8 +53,8 @@ bool GraphicsModule::RenderFrame(float timeelapsed)
 		0,0,0,1);
 
 		XMMATRIX rot( 
-		1,0,0,0,
-		0,1,0,0,
+		cos(gameobjects[i].heading * PI / 180),sin(gameobjects[i].heading * PI / 180),0,0,
+		-sin(gameobjects[i].heading * PI / 180),cos(gameobjects[i].heading * PI / 180),0,0,
 		0,0,1,0,
 		0,0,0,1);
 
@@ -64,18 +67,13 @@ bool GraphicsModule::RenderFrame(float timeelapsed)
 		UINT offset = 0;	
 	
 		thepipeline.devcon->IASetVertexBuffers(0, 1, &gameobjects[i].mesh->VertexBuffer, &stride, &offset);
-		// select which primtive type we are using
 		thepipeline.devcon->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-
-
 		thepipeline.constbuffshader.cWVP = WVP;
 
 		error = thepipeline.devcon->Map(thepipeline.cb, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &(thepipeline.constbuffmvp));
 		if (FAILED(error)) { MessageBox(NULL,L"OH NOES CONSTBUFFMAP!",L"QUIT",NULL); }
-
-		memcpy(thepipeline.constbuffmvp.pData, &(thepipeline.constbuffshader), sizeof(thepipeline.constbuffshader));                // copy the data
-
-		thepipeline.devcon->Unmap(thepipeline.cb, NULL);													// unmap the buffer
+		memcpy(thepipeline.constbuffmvp.pData, &(thepipeline.constbuffshader), sizeof(thepipeline.constbuffshader));               
+		thepipeline.devcon->Unmap(thepipeline.cb, NULL);													
 
 		// draw the vertex buffer to the back buffer
 		thepipeline.devcon->Draw(4, 0);
@@ -89,16 +87,165 @@ bool GraphicsModule::RenderFrame(float timeelapsed)
 }
 
 void GraphicsModule::InitLevel(int level){
+	float blue[4] = {0.0f, 0.0f, 1.0f, 1.0f};
+	float red[4] = {1.0f, 0.0f, .0f, 1.0f};
+	float green[4] = {0.0f, 1.0f, 0.0f, 1.0f};
+	
+	
+	/*VERTEX square[4] =
+	{
+		{-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f},
+		{-0.5f, 0.5f, 0.0f, 1.0f, 0.0f, .0f, 1.0f},
+		{0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f},
+		{0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f}
+	};*/
 
-	objectmesh squaremesh;
+	VERTEXTEX square[4] =
+	{
+		{-0.5f, -0.5f, 0.0f, 0.0f, 1.0f},
+		{-0.5f, 0.5f, 0.0f, 0.0f, 0.0f},
+		{0.5f, -0.5f, 0.0f, 1.0f, 1.0f},
+		{0.5f, 0.5f, 0.0f, 1.0f, 0.0f}
+	};
+	
+	VERTEXTEX triangle[3] = 
+	{
+		{-0.5f, -0.5f, 0.0f, 0.0f, 1.0f},
+		{-0.5f, 0.5f, 0.0f, 0.0f, 0.0f},
+		{0.5f, 0.0f, 0.0f, 1.0f, 0.5f}		
+	};
+
+	std::vector<VERTEXTEX> temptriangle(triangle,triangle+sizeof(triangle)/sizeof(VERTEXTEX));
+	std::vector<VERTEXTEX> tempsquare(square,square+sizeof(square)/sizeof(VERTEXTEX));
+	//std::vector<VERTEX> temp(setup,setup+sizeof(setup)/sizeof(VERTEX));
+	objectmesh trianglemesh(temptriangle);
+	objectmesh squaremesh(tempsquare);
+	meshes.push_back(temptriangle);
 	meshes.push_back(squaremesh);
 	thepipeline.CreateVB(meshes[0]);
-	gameobject temp(0,0,20,20,0,0,&meshes[0],this,thepipeline.pShaderRVBricks);
-	gameobjects.push_back(temp);
+	thepipeline.CreateVB(meshes[1]);
+	gameobject ship(0,0,20,20,0,0,25,25,0,70,1,&meshes[0],this,thepipeline.pShaderRVBricks);
+	gameobjects.push_back(ship);
+
 	
+	gameobject asteroid(80,190,50,50,20,10,0,1,0,0,3,&meshes[1],this,thepipeline.projtexture);
+	gameobject asteroid2(-80,-190,50,50,30,10,1,0,0,0,3,&meshes[1],this,thepipeline.projtexture);
+	gameobject asteroid3(-80,190,50,50,-14,-10,1,0,0,0,3,&meshes[1],this,thepipeline.projtexture);
+	gameobject asteroid4(80,-190,50,50,20,-20,1,0,0,0,3,&meshes[1],this,thepipeline.projtexture);
+	gameobject asteroid5(230,90,50,50,-20,10,1,0,0,0,3,&meshes[1],this,thepipeline.projtexture);
+	gameobjects.push_back(asteroid);
+	gameobjects.push_back(asteroid2);
+	gameobjects.push_back(asteroid5);
+	gameobjects.push_back(asteroid3);
+	gameobjects.push_back(asteroid4);
 }
 
-void GraphicsModule::UpdateFrame(float timeelapsed){
+void GraphicsModule::UpdateFrame(float timeelapsed, float totaltime){
+	static float firedelay = cooldown;
+
+	if(GetAsyncKeyState(0x26)){ //Up arrow
+		gameobjects[0].vx += timeelapsed * cos(gameobjects[0].heading * PI / 180)*gameobjects[0].aux1;
+		//gameobjects[0].vx = 40;
+		gameobjects[0].vy += timeelapsed * sin(gameobjects[0].heading * PI / 180)*gameobjects[0].aux2;
+	}
+	if(GetAsyncKeyState(0x25)) //Left arrow
+		gameobjects[0].heading += timeelapsed * gameobjects[0].turn;
+
+	if(GetAsyncKeyState(0x27)) //Right arrow
+		gameobjects[0].heading -= timeelapsed * gameobjects[0].turn;
+
+	if(GetAsyncKeyState(0x28)){ //Down arrow
+		//gameobjects[0].vy = 40;
+		gameobjects[0].vx -= timeelapsed * cos(gameobjects[0].heading * PI / 180)*gameobjects[0].aux1;
+		gameobjects[0].vy -= timeelapsed * sin(gameobjects[0].heading * PI / 180)*gameobjects[0].aux2;
+	}
+	if(GetAsyncKeyState(0x20)){ //Space bar
+		firedelay = firedelay + timeelapsed;
+		if(firedelay > cooldown){
+			//gameobject projectile(gameobjects[0].x,gameobjects[0].y,5,5,(cos(gameobjects[0].heading*PI/180)*50)+gameobjects[0].vx,(sin(gameobjects[0].heading*PI/180)*50)+gameobjects[0].vy,gameobjects[0].x,gameobjects[0].y,gameobjects[0].heading,0,2,&meshes[1],this,thepipeline.projtexture);
+			gameobject projectile(gameobjects[0].x,gameobjects[0].y,5,5,(cos(gameobjects[0].heading*PI/180)*50)+gameobjects[0].vx,(sin(gameobjects[0].heading*PI/180)*50)+gameobjects[0].vy,totaltime,0,0,0,2,&meshes[1],this,thepipeline.projtexture);
+			gameobjects.push_back(projectile);
+			firedelay = 0;
+		}
+
+	}
+
+	for(int i = 0;i<gameobjects.size();i++){
+		if(gameobjects[i].x > 340)
+			gameobjects[i].x = -340;
+		if(gameobjects[i].x < -340)
+			gameobjects[i].x = 340;
+		if(gameobjects[i].y > 200)
+			gameobjects[i].y = -200;
+		if(gameobjects[i].y < -200)
+			gameobjects[i].y = 200;
+		gameobjects[i].x += timeelapsed * gameobjects[i].vx;
+		gameobjects[i].y += timeelapsed * gameobjects[i].vy;
+	}
+
+	gameobject dummy(0,0,0,0,0,0,0,0,0,0,99,&meshes[1],this,thepipeline.projtexture);
+	gameobjects.push_back(dummy);
+
+	std::vector<int> nukelist;
+	std::vector<gameobject> makelist;
+
+	for(int i = 0;i<gameobjects.size();i++){
+		if(gameobjects[i].type == 2){
+			//if(sqrt(pow(abs(gameobjects[i].x-gameobjects[i].aux1),2)+pow(abs(gameobjects[i].y-gameobjects[i].aux2),2))>firingrange){
+			if((totaltime - gameobjects[i].aux1)>firingrange){
+				float teest = sqrt(pow(abs(gameobjects[i].x-gameobjects[i].aux1),2)+pow(abs(gameobjects[i].y-gameobjects[i].aux2),2));
+				nukelist.push_back(i);
+			}
+		}
+	}
+
+	DeleteObjects(nukelist);
+	nukelist.clear();
+	gameobjects.push_back(dummy);
+
+	for(int i = 0;i<gameobjects.size();i++){
+		if(gameobjects[i].type == 2){
+			for(int j = 0;j<gameobjects.size();j++){
+				if(gameobjects[j].type == 3){
+					if(circlecoll(gameobjects[i],gameobjects[j])){
+						if(gameobjects[j].aux1 == 1){
+							gameobject asteroid2(gameobjects[j].x,gameobjects[j].y,30,30,30,10,2,0,0,0,3,&meshes[1],this,thepipeline.projtexture);
+							gameobject asteroid3(gameobjects[j].x,gameobjects[j].y,30,30,-14,-10,2,0,0,0,3,&meshes[1],this,thepipeline.projtexture);
+							gameobject asteroid4(gameobjects[j].x,gameobjects[j].y,30,30,20,-20,2,0,0,0,3,&meshes[1],this,thepipeline.projtexture);
+							gameobject asteroid5(gameobjects[j].x,gameobjects[j].y,30,30,-20,10,2,0,0,0,3,&meshes[1],this,thepipeline.projtexture);
+							makelist.push_back(asteroid2);
+							makelist.push_back(asteroid3);
+							makelist.push_back(asteroid4);
+							makelist.push_back(asteroid5);
+						}
+						nukelist.push_back(i);
+						nukelist.push_back(j);
+					}
+				}
+			}
+		}
+	}
+	DeleteObjects(nukelist);
+	nukelist.clear();
+
+	for(int i = 0;i<makelist.size();i++){
+		gameobjects.push_back(makelist[i]);
+	}
+}
+
+void GraphicsModule::DeleteObjects(std::vector<int> paranukelist){
+
+	for(int i = 0;i<paranukelist.size();i++){
+		std::iter_swap(gameobjects.begin()+paranukelist[i],gameobjects.end()-1);
+		gameobjects.erase(gameobjects.end()-1);
+	}
+
+	for(int i = 0;i<gameobjects.size();i++){
+		if(gameobjects[i].type == 99){
+			gameobjects.erase(gameobjects.begin()+i);
+			break;
+		}
+	}
 }
 
 // this is the function that cleans up Direct3D and COM

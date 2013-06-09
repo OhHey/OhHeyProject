@@ -45,7 +45,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)\DirectXTK\inc;C:\Users\Matt\Documents\Visual Studio 2012\Projects\DXHelpers\DirectXTex;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\Matt\Documents\Visual Studio 2012\Projects\DXTK\Inc;C:\Users\Matt\Documents\Visual Studio 2012\Projects\DXHelpers\DirectXTex;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -80,6 +80,7 @@
   <ItemGroup>
     <ClInclude Include="GameModule.h" />
     <ClInclude Include="GameTimer.h" />
+    <ClInclude Include="physicslib.h" />
     <ClInclude Include="structsandincludes.h" />
     <ClInclude Include="objectmesh.h" />
     <ClInclude Include="objects.h" />
@@ -95,11 +96,13 @@
     <ClCompile Include="objects.cpp" />
     <ClCompile Include="GameModule.cpp" />
     <ClCompile Include="pipeline.cpp" />
+    <ClCompile Include="physicslib.cpp" />
     <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shaders.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

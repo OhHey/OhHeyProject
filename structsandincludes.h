@@ -1,12 +1,15 @@
 #pragma once
 #define D3D_DEBUG_INFO
+
 #include <d3d11.h>
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
 #include <time.h>
 #include <DirectXTex.h>
 #include <WICTextureLoader.h>
-#include "objects.h"
+
+
+#define PI 3.14159265
 
 // include the Direct3D Library file
 #pragma comment (lib, "d3d11.lib")
