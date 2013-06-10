@@ -102,10 +102,20 @@ void pipeline::InitShaders(){
 	if (FAILED(error)) { MessageBoxA(NULL,os.str().c_str(),"QUIT",NULL); }
 
 	//load the picture to a shader resource view
-	error = CreateWICTextureFromFile(Device, devcon, L"brick2.JPEG",nullptr,&pShaderRVBricks);
+	error = CreateWICTextureFromFile(Device, devcon, L"aship.JPEG",nullptr,&shiptexture);
 	if (FAILED(error)) { MessageBox(NULL,L"OH NOES WICLOADER BRICKS!",L"QUIT",NULL); }
-	error = CreateWICTextureFromFile(Device, devcon, L"circle.png",nullptr,&projtexture);
+	error = CreateWICTextureFromFile(Device, devcon, L"aprojectile.png",nullptr,&projtexture);
 	if (FAILED(error)) { MessageBox(NULL,L"OH NOES WICLOADER SHIP",L"QUIT",NULL); }
+	error = CreateWICTextureFromFile(Device, devcon, L"aasteroid.png",nullptr,&asttexture);
+	if (FAILED(error)) { MessageBox(NULL,L"OH NOES WICLOADER SHIP",L"QUIT",NULL); }
+	error = CreateWICTextureFromFile(Device, devcon, L"alvl1back1.png",nullptr,&lvl1back1texture);
+	if (FAILED(error)) { MessageBox(NULL,L"OH NOES LVL1BACK1",L"QUIT",NULL); }
+	error = CreateWICTextureFromFile(Device, devcon, L"alvl1back2.png",nullptr,&lvl1back2texture);
+	if (FAILED(error)) { MessageBox(NULL,L"OH NOES LVL1BACK2",L"QUIT",NULL); }
+	error = CreateWICTextureFromFile(Device, devcon, L"alvl1back3.png",nullptr,&lvl1back3texture);
+	if (FAILED(error)) { MessageBox(NULL,L"OH NOES LVL1BACK3",L"QUIT",NULL); }
+	error = CreateWICTextureFromFile(Device, devcon, L"alvl1back4.png",nullptr,&lvl1back4texture);
+	if (FAILED(error)) { MessageBox(NULL,L"OH NOES LVL1BACK4",L"QUIT",NULL); }
 
 	//sampler description
 	D3D11_SAMPLER_DESC samplerDesc;

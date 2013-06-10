@@ -28,8 +28,13 @@ public:
 	CONSTBUFFWVP constbuffshader; // constant buffer
 
 	//Textures
-	ID3D11ShaderResourceView *pShaderRVBricks; //shader resource view
+	ID3D11ShaderResourceView *asttexture; //shader resource view
 	ID3D11ShaderResourceView *projtexture; //shader resource view
+	ID3D11ShaderResourceView *shiptexture;
+	ID3D11ShaderResourceView *lvl1back1texture;
+	ID3D11ShaderResourceView *lvl1back2texture;
+	ID3D11ShaderResourceView *lvl1back3texture;
+	ID3D11ShaderResourceView *lvl1back4texture;
 
 	pipeline(HWND hWndin);
 

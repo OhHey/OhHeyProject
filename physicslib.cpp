@@ -121,3 +121,5 @@ bool circlecoll(gameobject c1, gameobject c2){
 	else
 		return false;
 }
+
+//float trianglecirclecoll(gameobject tri, gameobject circ){

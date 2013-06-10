@@ -35,6 +35,7 @@ bool GraphicsModule::RenderFrame(float timeelapsed)
 	float clearColor[4] = { 0.0f, 0.2f, 0.4f, 1.0f };
 	thepipeline.devcon->ClearRenderTargetView(thepipeline.BackBuffer, clearColor);
 
+
 	for(int i=0;i<gameobjects.size();i++){
 		thepipeline.devcon->PSSetShaderResources(0,1,&gameobjects[i].texture);
 
@@ -124,15 +125,17 @@ void GraphicsModule::InitLevel(int level){
 	meshes.push_back(squaremesh);
 	thepipeline.CreateVB(meshes[0]);
 	thepipeline.CreateVB(meshes[1]);
-	gameobject ship(0,0,20,20,0,0,25,25,0,70,1,&meshes[0],this,thepipeline.pShaderRVBricks);
+	gameobject background(0,0,680,400,0,0,0,0,0,0,BACKDROP,&meshes[1],this,thepipeline.lvl1back1texture);
+	gameobjects.push_back(background);
+	gameobject ship(0,0,20,20,0,0,45,45,0,140,SHIP,&meshes[0],this,thepipeline.shiptexture);
 	gameobjects.push_back(ship);
 
 	
-	gameobject asteroid(80,190,50,50,20,10,0,1,0,0,3,&meshes[1],this,thepipeline.projtexture);
-	gameobject asteroid2(-80,-190,50,50,30,10,1,0,0,0,3,&meshes[1],this,thepipeline.projtexture);
-	gameobject asteroid3(-80,190,50,50,-14,-10,1,0,0,0,3,&meshes[1],this,thepipeline.projtexture);
-	gameobject asteroid4(80,-190,50,50,20,-20,1,0,0,0,3,&meshes[1],this,thepipeline.projtexture);
-	gameobject asteroid5(230,90,50,50,-20,10,1,0,0,0,3,&meshes[1],this,thepipeline.projtexture);
+	gameobject asteroid(80,190,50,50,20,10,1,0,0,0,ASTEROID,&meshes[1],this,thepipeline.asttexture);
+	gameobject asteroid2(-80,-190,50,50,30,10,1,0,0,0,ASTEROID,&meshes[1],this,thepipeline.asttexture);
+	gameobject asteroid3(-80,190,50,50,-14,-10,1,0,0,0,ASTEROID,&meshes[1],this,thepipeline.asttexture);
+	gameobject asteroid4(80,-190,50,50,20,-20,1,0,0,0,ASTEROID,&meshes[1],this,thepipeline.asttexture);
+	gameobject asteroid5(230,90,50,50,-20,10,1,0,0,0,ASTEROID,&meshes[1],this,thepipeline.asttexture);
 	gameobjects.push_back(asteroid);
 	gameobjects.push_back(asteroid2);
 	gameobjects.push_back(asteroid5);
@@ -142,28 +145,29 @@ void GraphicsModule::InitLevel(int level){
 
 void GraphicsModule::UpdateFrame(float timeelapsed, float totaltime){
 	static float firedelay = cooldown;
+	SetBackDrop(totaltime);
 
 	if(GetAsyncKeyState(0x26)){ //Up arrow
-		gameobjects[0].vx += timeelapsed * cos(gameobjects[0].heading * PI / 180)*gameobjects[0].aux1;
+		gameobjects[1].vx += timeelapsed * cos(gameobjects[1].heading * PI / 180)*gameobjects[1].aux1;
 		//gameobjects[0].vx = 40;
-		gameobjects[0].vy += timeelapsed * sin(gameobjects[0].heading * PI / 180)*gameobjects[0].aux2;
+		gameobjects[1].vy += timeelapsed * sin(gameobjects[1].heading * PI / 180)*gameobjects[1].aux2;
 	}
 	if(GetAsyncKeyState(0x25)) //Left arrow
-		gameobjects[0].heading += timeelapsed * gameobjects[0].turn;
+		gameobjects[1].heading += timeelapsed * gameobjects[1].turn;
 
 	if(GetAsyncKeyState(0x27)) //Right arrow
-		gameobjects[0].heading -= timeelapsed * gameobjects[0].turn;
+		gameobjects[1].heading -= timeelapsed * gameobjects[1].turn;
 
 	if(GetAsyncKeyState(0x28)){ //Down arrow
 		//gameobjects[0].vy = 40;
-		gameobjects[0].vx -= timeelapsed * cos(gameobjects[0].heading * PI / 180)*gameobjects[0].aux1;
-		gameobjects[0].vy -= timeelapsed * sin(gameobjects[0].heading * PI / 180)*gameobjects[0].aux2;
+		gameobjects[1].vx -= timeelapsed * cos(gameobjects[1].heading * PI / 180)*gameobjects[1].aux1;
+		gameobjects[1].vy -= timeelapsed * sin(gameobjects[1].heading * PI / 180)*gameobjects[1].aux2;
 	}
 	if(GetAsyncKeyState(0x20)){ //Space bar
 		firedelay = firedelay + timeelapsed;
 		if(firedelay > cooldown){
 			//gameobject projectile(gameobjects[0].x,gameobjects[0].y,5,5,(cos(gameobjects[0].heading*PI/180)*50)+gameobjects[0].vx,(sin(gameobjects[0].heading*PI/180)*50)+gameobjects[0].vy,gameobjects[0].x,gameobjects[0].y,gameobjects[0].heading,0,2,&meshes[1],this,thepipeline.projtexture);
-			gameobject projectile(gameobjects[0].x,gameobjects[0].y,5,5,(cos(gameobjects[0].heading*PI/180)*50)+gameobjects[0].vx,(sin(gameobjects[0].heading*PI/180)*50)+gameobjects[0].vy,totaltime,0,0,0,2,&meshes[1],this,thepipeline.projtexture);
+			gameobject projectile(gameobjects[1].x,gameobjects[1].y,5,5,(cos(gameobjects[1].heading*PI/180)*50)+gameobjects[1].vx,(sin(gameobjects[1].heading*PI/180)*50)+gameobjects[1].vy,totaltime,0,0,0,PROJECTILE,&meshes[1],this,thepipeline.projtexture);
 			gameobjects.push_back(projectile);
 			firedelay = 0;
 		}
@@ -209,10 +213,10 @@ void GraphicsModule::UpdateFrame(float timeelapsed, float totaltime){
 				if(gameobjects[j].type == 3){
 					if(circlecoll(gameobjects[i],gameobjects[j])){
 						if(gameobjects[j].aux1 == 1){
-							gameobject asteroid2(gameobjects[j].x,gameobjects[j].y,30,30,30,10,2,0,0,0,3,&meshes[1],this,thepipeline.projtexture);
-							gameobject asteroid3(gameobjects[j].x,gameobjects[j].y,30,30,-14,-10,2,0,0,0,3,&meshes[1],this,thepipeline.projtexture);
-							gameobject asteroid4(gameobjects[j].x,gameobjects[j].y,30,30,20,-20,2,0,0,0,3,&meshes[1],this,thepipeline.projtexture);
-							gameobject asteroid5(gameobjects[j].x,gameobjects[j].y,30,30,-20,10,2,0,0,0,3,&meshes[1],this,thepipeline.projtexture);
+							gameobject asteroid2(gameobjects[j].x,gameobjects[j].y,30,30,30,10,2,0,0,0,ASTEROID,&meshes[1],this,thepipeline.asttexture);
+							gameobject asteroid3(gameobjects[j].x,gameobjects[j].y,30,30,-14,-10,2,0,0,0,ASTEROID,&meshes[1],this,thepipeline.asttexture);
+							gameobject asteroid4(gameobjects[j].x,gameobjects[j].y,30,30,20,-20,2,0,0,0,ASTEROID,&meshes[1],this,thepipeline.asttexture);
+							gameobject asteroid5(gameobjects[j].x,gameobjects[j].y,30,30,-20,10,2,0,0,0,ASTEROID,&meshes[1],this,thepipeline.asttexture);
 							makelist.push_back(asteroid2);
 							makelist.push_back(asteroid3);
 							makelist.push_back(asteroid4);
@@ -245,6 +249,24 @@ void GraphicsModule::DeleteObjects(std::vector<int> paranukelist){
 			gameobjects.erase(gameobjects.begin()+i);
 			break;
 		}
+	}
+}
+
+void GraphicsModule::SetBackDrop(float totaltime){
+
+	float backgroundtimer = (int)totaltime % 4;
+
+	if(backgroundtimer<1){
+		gameobjects[0].texture = thepipeline.lvl1back1texture;
+	}
+	else if(backgroundtimer<2){
+		gameobjects[0].texture = thepipeline.lvl1back2texture;
+	}
+	else if(backgroundtimer<3){
+		gameobjects[0].texture = thepipeline.lvl1back3texture;
+	}
+	else{
+		gameobjects[0].texture = thepipeline.lvl1back4texture;
 	}
 }
 

@@ -10,7 +10,7 @@
 
 using namespace DirectX;
 
-
+enum object_type { SHIP = 1, PROJECTILE = 2, ASTEROID = 3, DECORATION = 4 , BACKDROP = 98, DUMMY = 99};
 // function prototypes
 void CleanD3D(void);         // closes Direct3D and releases memory
 
@@ -26,9 +26,10 @@ public:
 
 	void InitLevel(int level);
 
-	void DeleteObjects(std::vector<int> paranukelist);
 	void UpdateFrame(float timeelapsed, float totaltime);
 	bool RenderFrame(float timeelapsed);
+	void SetBackDrop(float totaltime);
+	void DeleteObjects(std::vector<int> paranukelist);
 	void Shutdown(void);
 
 	float cooldown, firingrange;
