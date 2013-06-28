@@ -102,20 +102,36 @@ void pipeline::InitShaders(){
 	if (FAILED(error)) { MessageBoxA(NULL,os.str().c_str(),"QUIT",NULL); }
 
 	//load the picture to a shader resource view
-	error = CreateWICTextureFromFile(Device, devcon, L"aship.JPEG",nullptr,&shiptexture);
+	error = CreateWICTextureFromFile(Device, devcon, L"./images/aship.JPEG",nullptr,&shiptexture);
 	if (FAILED(error)) { MessageBox(NULL,L"OH NOES WICLOADER BRICKS!",L"QUIT",NULL); }
-	error = CreateWICTextureFromFile(Device, devcon, L"aprojectile.png",nullptr,&projtexture);
+	error = CreateWICTextureFromFile(Device, devcon, L"./images/aprojectile.png",nullptr,&projtexture);
 	if (FAILED(error)) { MessageBox(NULL,L"OH NOES WICLOADER SHIP",L"QUIT",NULL); }
-	error = CreateWICTextureFromFile(Device, devcon, L"aasteroid.png",nullptr,&asttexture);
+	error = CreateWICTextureFromFile(Device, devcon, L"./images/aasteroid.png",nullptr,&asttexture);
 	if (FAILED(error)) { MessageBox(NULL,L"OH NOES WICLOADER SHIP",L"QUIT",NULL); }
-	error = CreateWICTextureFromFile(Device, devcon, L"alvl1back1.png",nullptr,&lvl1back1texture);
+	error = CreateWICTextureFromFile(Device, devcon, L"./images/alvl1back1.png",nullptr,&lvl1back1texture);
 	if (FAILED(error)) { MessageBox(NULL,L"OH NOES LVL1BACK1",L"QUIT",NULL); }
-	error = CreateWICTextureFromFile(Device, devcon, L"alvl1back2.png",nullptr,&lvl1back2texture);
+	error = CreateWICTextureFromFile(Device, devcon, L"./images/alvl1back2.png",nullptr,&lvl1back2texture);
 	if (FAILED(error)) { MessageBox(NULL,L"OH NOES LVL1BACK2",L"QUIT",NULL); }
-	error = CreateWICTextureFromFile(Device, devcon, L"alvl1back3.png",nullptr,&lvl1back3texture);
+	error = CreateWICTextureFromFile(Device, devcon, L"./images/alvl1back3.png",nullptr,&lvl1back3texture);
 	if (FAILED(error)) { MessageBox(NULL,L"OH NOES LVL1BACK3",L"QUIT",NULL); }
-	error = CreateWICTextureFromFile(Device, devcon, L"alvl1back4.png",nullptr,&lvl1back4texture);
+	error = CreateWICTextureFromFile(Device, devcon, L"./images/alvl1back4.png",nullptr,&lvl1back4texture);
 	if (FAILED(error)) { MessageBox(NULL,L"OH NOES LVL1BACK4",L"QUIT",NULL); }
+	error = CreateWICTextureFromFile(Device, devcon, L"./images/gameovertext.tif",nullptr,&gameovertexture);
+	if (FAILED(error)) { MessageBox(NULL,L"OH NOES gameover",L"QUIT",NULL); }
+	error = CreateWICTextureFromFile(Device, devcon, L"./images/armourtext.tif",nullptr,&armourtexttexture);
+	if (FAILED(error)) { MessageBox(NULL,L"OH NOES armourtext",L"QUIT",NULL); }
+	error = CreateWICTextureFromFile(Device, devcon, L"./images/shieldtext.tif",nullptr,&shieldtexttexture);
+	if (FAILED(error)) { MessageBox(NULL,L"OH NOES shieldtext",L"QUIT",NULL); }
+	error = CreateWICTextureFromFile(Device, devcon, L"./images/0text.tif",nullptr,&text0texture);
+	if (FAILED(error)) { MessageBox(NULL,L"OH NOES 0text",L"QUIT",NULL); }
+	error = CreateWICTextureFromFile(Device, devcon, L"./images/1text.tif",nullptr,&text1texture);
+	if (FAILED(error)) { MessageBox(NULL,L"OH NOES 1text",L"QUIT",NULL); }
+	error = CreateWICTextureFromFile(Device, devcon, L"./images/2text.tif",nullptr,&text2texture);
+	if (FAILED(error)) { MessageBox(NULL,L"OH NOES 2text",L"QUIT",NULL); }
+	error = CreateWICTextureFromFile(Device, devcon, L"./images/3text.tif",nullptr,&text3texture);
+	if (FAILED(error)) { MessageBox(NULL,L"OH NOES 3text",L"QUIT",NULL); }
+	error = CreateWICTextureFromFile(Device, devcon, L"./images/shield.tif",nullptr,&shieldtexture);
+	if (FAILED(error)) { MessageBox(NULL,L"OH NOES shield",L"QUIT",NULL); }
 
 	//sampler description
 	D3D11_SAMPLER_DESC samplerDesc;

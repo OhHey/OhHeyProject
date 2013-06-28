@@ -54,7 +54,7 @@ windowclass::windowclass(HINSTANCE &instance)
     int posY = (GetSystemMetrics(SM_CYSCREEN) - (windowSize.bottom - windowSize.top)) / 2;
 
     // Create the window.
-    this->window = CreateWindowEx(NULL, L"Win32-And-DirectX-11-Tutorial", L"Win32 And DirectX 11 Tutorial Series",
+    this->window = CreateWindowEx(NULL, L"Win32-And-DirectX-11-Tutorial", L"Asteroids",
                                     WS_OVERLAPPEDWINDOW, posX, posY, (windowSize.right - windowSize.left),
                                     (windowSize.bottom - windowSize.top), NULL, NULL, instance, NULL);
 

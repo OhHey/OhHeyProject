@@ -25,8 +25,13 @@ struct VERTEX
 
 struct VERTEXTEX
 {
-	FLOAT X, Y, Z;      // position
+	float X, Y, Z;      // position
 	float tx, ty;
+};
+
+struct PHYSVERT
+{
+	float x,y,z;
 };
 
 struct CONSTBUFFWVP

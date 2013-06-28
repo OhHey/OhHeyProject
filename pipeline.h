@@ -35,6 +35,14 @@ public:
 	ID3D11ShaderResourceView *lvl1back2texture;
 	ID3D11ShaderResourceView *lvl1back3texture;
 	ID3D11ShaderResourceView *lvl1back4texture;
+	ID3D11ShaderResourceView *gameovertexture;
+	ID3D11ShaderResourceView *armourtexttexture;
+	ID3D11ShaderResourceView *shieldtexttexture;
+	ID3D11ShaderResourceView *text0texture;
+	ID3D11ShaderResourceView *text1texture;
+	ID3D11ShaderResourceView *text2texture;
+	ID3D11ShaderResourceView *text3texture;
+	ID3D11ShaderResourceView *shieldtexture;
 
 	pipeline(HWND hWndin);
 

@@ -14,7 +14,10 @@ struct VOutTex
 
 SamplerState gogosampler
 {
-    Filter = MIN_MAG_MIP_LINEAR;
+	//MipFilter = NONE;
+    Filter = MIN_MAG_LINEAR_MIP_POINT;
+	//ComparisonFunc = LESS;
+	//ComparisonFilter = COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
 };
 
 
@@ -58,7 +61,9 @@ float4 PShaderTex(float4 position : SV_POSITION, float2 texcoord : TEXCOORD) : S
 {
 	float4 colourtest = float4( 0, 1, 0, 1 );
 	//return colourtest;
-	
-    return bricks.Sample(gogosampler,texcoord);
+	return bricks.Sample(gogosampler,texcoord);
+	//if(sampled.a == 0.0){sampled.rgb = 0.0;}
+	//return sampled;
+    //return float4(bricks.Sample(gogosampler,texcoord).aaa,1.0);
 }
 
