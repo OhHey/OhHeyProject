@@ -46,12 +46,30 @@ bool GraphicsModule::RenderFrame(float timeelapsed)
 
 void GraphicsModule::InitLevel(int level){
 
+	for(int i = 0;i < UIobjects.size();i++){
+		if(UIobjects[i].type == TEXTOVER)
+			UIobjects.erase(UIobjects.begin() + i);
+	}
+
 	if(level == 1)
 		InitLevel1();
 
 }
 
+void GraphicsModule::LevelOver(){
+	gameobjects.clear();
+	gameobject levelcomplete(0,0,150,50,0,0,0,0,0,0,TEXTOVER,&meshes[1],this,thepipeline.levelcompletetexture);
+	UIobjects.push_back(levelcomplete);
+	while(!GetAsyncKeyState(0x0D)){
+		RenderUI();
+		thepipeline.SwapChain->Present(0, 0);
+	}
+	InitLevel(1);
+}
+
 void GraphicsModule::UpdateFrame(float timeelapsed, float totaltime){
+
+	numast = 0;
 	
 	SetBackDrop(totaltime);//Set stars on background
 
@@ -74,7 +92,7 @@ void GraphicsModule::UpdateFrame(float timeelapsed, float totaltime){
 		gameobjects[i].y += timeelapsed * gameobjects[i].vy;
 	}
 
-	gameobject dummy(0,0,0,0,0,0,0,0,0,0,99,&meshes[1],this,thepipeline.projtexture);//add dunny object to stack
+	gameobject dummy(0,0,0,0,0,0,0,0,0,0,99,&meshes[1],this,thepipeline.projtexture);//add dummy object to stack
 	gameobjects.push_back(dummy);
 
 	std::vector<int> nukelist;
@@ -188,10 +206,18 @@ void GraphicsModule::UpdateFrame(float timeelapsed, float totaltime){
 				}
 			}
 		}
+		
+		if(gameobjects[i].type == ASTEROID){
+			numast++;
+		}
 	}	
 
 	for(int i = 0;i<makelist.size();i++){
 		gameobjects.push_back(makelist[i]);
+	}
+
+	if(numast == 0){
+		LevelOver();
 	}
 }
 
@@ -246,6 +272,17 @@ void CleanD3D()
 
 void GraphicsModule::GetInput(float timeelapsed, float totaltime){
 	static float firedelay = cooldown;
+
+	if(GetAsyncKeyState(0x20)){ //Space bar
+		firedelay = firedelay + timeelapsed;
+		if(firedelay > cooldown){
+			//gameobject projectile(gameobjects[0].x,gameobjects[0].y,5,5,(cos(gameobjects[0].heading*PI/180)*50)+gameobjects[0].vx,(sin(gameobjects[0].heading*PI/180)*50)+gameobjects[0].vy,gameobjects[0].x,gameobjects[0].y,gameobjects[0].heading,0,2,&meshes[1],this,thepipeline.projtexture);
+			gameobject projectile(gameobjects[1].x,gameobjects[1].y,5,5,(cos(gameobjects[1].heading*PI/180)*50)+gameobjects[1].vx,(sin(gameobjects[1].heading*PI/180)*50)+gameobjects[1].vy,totaltime,0,0,0,PROJECTILE,&meshes[1],this,thepipeline.projtexture);
+			gameobjects.push_back(projectile);
+			firedelay = 0;
+		}
+
+	}
 	if(GetAsyncKeyState(0x26)){ //Up arrow
 		gameobjects[1].vx += timeelapsed * cos(gameobjects[1].heading * PI / 180)*gameobjects[1].aux1;
 		//gameobjects[0].vx = 40;
@@ -261,16 +298,6 @@ void GraphicsModule::GetInput(float timeelapsed, float totaltime){
 		//gameobjects[0].vy = 40;
 		gameobjects[1].vx -= timeelapsed * cos(gameobjects[1].heading * PI / 180)*gameobjects[1].aux1;
 		gameobjects[1].vy -= timeelapsed * sin(gameobjects[1].heading * PI / 180)*gameobjects[1].aux2;
-	}
-	if(GetAsyncKeyState(0x20)){ //Space bar
-		firedelay = firedelay + timeelapsed;
-		if(firedelay > cooldown){
-			//gameobject projectile(gameobjects[0].x,gameobjects[0].y,5,5,(cos(gameobjects[0].heading*PI/180)*50)+gameobjects[0].vx,(sin(gameobjects[0].heading*PI/180)*50)+gameobjects[0].vy,gameobjects[0].x,gameobjects[0].y,gameobjects[0].heading,0,2,&meshes[1],this,thepipeline.projtexture);
-			gameobject projectile(gameobjects[1].x,gameobjects[1].y,5,5,(cos(gameobjects[1].heading*PI/180)*50)+gameobjects[1].vx,(sin(gameobjects[1].heading*PI/180)*50)+gameobjects[1].vy,totaltime,0,0,0,PROJECTILE,&meshes[1],this,thepipeline.projtexture);
-			gameobjects.push_back(projectile);
-			firedelay = 0;
-		}
-
 	}
 }
 

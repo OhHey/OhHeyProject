@@ -43,6 +43,7 @@ public:
 	ID3D11ShaderResourceView *text2texture;
 	ID3D11ShaderResourceView *text3texture;
 	ID3D11ShaderResourceView *shieldtexture;
+	ID3D11ShaderResourceView *levelcompletetexture;
 
 	pipeline(HWND hWndin);
 

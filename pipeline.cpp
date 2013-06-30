@@ -132,6 +132,8 @@ void pipeline::InitShaders(){
 	if (FAILED(error)) { MessageBox(NULL,L"OH NOES 3text",L"QUIT",NULL); }
 	error = CreateWICTextureFromFile(Device, devcon, L"./images/shield.tif",nullptr,&shieldtexture);
 	if (FAILED(error)) { MessageBox(NULL,L"OH NOES shield",L"QUIT",NULL); }
+	error = CreateWICTextureFromFile(Device, devcon, L"./images/levelcleartext.tif",nullptr,&levelcompletetexture);
+	if (FAILED(error)) { MessageBox(NULL,L"OH NOES levelcleartext",L"QUIT",NULL); }
 
 	//sampler description
 	D3D11_SAMPLER_DESC samplerDesc;

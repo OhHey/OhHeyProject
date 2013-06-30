@@ -35,12 +35,13 @@ public:
 	void RenderUI();
 	void RenderObjects();
 	bool RenderFrame(float timeelapsed);
+	void LevelOver();
 	void SetBackDrop(float totaltime);
 	void GetInput(float timeelapsed, float totaltime);
 	void DeleteObjects(std::vector<int> paranukelist);
 	void Shutdown(void);
 
-	float cooldown, firingrange, armour, shield;
+	float cooldown, firingrange, armour, shield, numast;
 
 	XMVECTOR updir;
 	XMVECTOR focus;
